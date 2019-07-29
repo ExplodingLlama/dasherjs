@@ -11,6 +11,8 @@ export default class P5Wrapper extends Component {
   componentDidMount() {
     this.canvas = new window.p5(dashersketch, "canvas-container");
     this.canvas.props = { ...this.props.p5Props, ...this.state };
+    this.canvas.getData = this.props.getData;
+    this.canvas.setXY = this.props.setXY;
     this.canvas.resetDone = this.resetDone;
     this.canvas.onSetAppState = this.props.onSetAppState;
   }

@@ -5,84 +5,84 @@ export default function(s) {
   s.state = {
     width: window.innerWidth,
     height: (window.innerHeight * 3) / 4,
-    current: {
-      x: window.innerWidth / 2,
-      y: 50
-    },
-    p1: {
-      x: window.innerWidth / 2,
-      y: 50
-    },
-    p2: {
-      x: window.innerWidth / 5,
-      y: (window.innerHeight * 3) / 4 - 50
-    },
-    p3: {
-      x: (window.innerWidth * 4) / 5,
-      y: (window.innerHeight * 3) / 4 - 50
+    isMoving: false,
+    data: {}
+  };
+
+  s.setup = function() {
+    s.createCanvas(s.state.width, s.state.height);
+    s.background(0);
+    s.drawLines();
+  };
+
+  s.drawLines = () => {
+    s.stroke(0, 255, 0);
+    s.fill(0, 255, 0);
+    s.line(s.state.width / 2, 0, s.state.width / 2, s.state.height);
+    s.line(
+      s.state.width / 2 - 50,
+      s.state.height / 2,
+      s.state.width / 2 + 50,
+      s.state.height / 2
+    );
+    s.line((s.state.width * 3) / 4, 0, (s.state.width * 3) / 4, s.state.height);
+  };
+
+  s.drawBoxes = () => {
+    s.stroke(0);
+    s.fill(255);
+    let data = s.getData();
+    s.state.data = data;
+    // data.x is the center point's distance from the data line w.r.t. the dataline
+    // data.y is the center point's distance from the top. 0 to 1
+    // data.data is all the square data which we will use to draw the squares.
+    for (let square of data.data) {
+      let bigL = s.state.width / (4 * data.x);
+      let bigY = bigL * data.y;
+      let offsetY = s.state.height / 2 - bigY;
+      let squareSize =
+        ((square.end - square.start) * s.state.width) / (4 * data.x);
+      let squareY = (square.start * s.state.width) / (4 * data.x) + offsetY;
+      let squareX = (s.state.width * 3) / 4 - squareSize; //because all the squares start on the line
+      s.rect(squareX, squareY, squareSize, squareSize);
+      s.textSize(32);
+      s.text(square.character, squareX + 10, squareY + squareSize / 2 - 10);
     }
   };
 
   s.mouseClicked = () => {
-    if (s.mouseY < s.state.height) {
-      s.state.p1 = s.state.p2;
-      s.state.p2 = s.state.p3;
-      s.state.p3 = {
-        x: s.mouseX,
-        y: s.mouseY
-      };
+    // s.setXY(0.03, s.mouseY / s.state.height);
+    // s.drawBoxes();
+    s.state.isMoving = !s.state.isMoving;
+  };
+
+  s.moveAround = () => {
+    if (s.state.isMoving) {
+      let speedY =
+        (Math.sign(s.mouseY - s.state.height / 2) *
+          Math.pow(Math.abs(s.mouseY - s.state.height / 2), 1.5)) /
+        2 /
+        (s.state.height * 100);
+      let speedX =
+        (-1 *
+          (Math.sign(s.mouseX - s.state.width / 2) *
+            Math.pow(Math.abs(s.mouseX - s.state.width / 2), 1.5))) /
+        (s.state.width * 100);
+      let newY = s.state.data.y + speedY * s.state.data.x;
+      let newX = s.state.data.x + speedX * s.state.data.x;
+      s.setXY(newX, newY);
+      s.stroke(255, 0, 0);
+      s.line(s.state.width / 2, s.state.height / 2, s.mouseX, s.mouseY);
+      // s.textSize(32);
+      // s.text("speedX: " + speedX, 100, 100);
+      // s.text("speedY: " + speedY, 100, 200);
     }
-    s.resetSketch();
-  };
-
-  s.checkForReset = () => {
-    if (s.props.isReseting) {
-      s.resetSketch();
-      s.resetDone();
-    }
-  };
-
-  s.setup = function() {
-    s.resetSketch();
-  };
-
-  s.resetSketch = () => {
-    s.createCanvas(window.innerWidth, (window.innerHeight * 3) / 4);
-
-    //setup
-    s.background(0);
-    s.stroke(255, 221, 89);
-    s.fill(255, 221, 89);
-
-    s.circle(s.state.p1.x, s.state.p1.y, 3);
-    s.circle(s.state.p2.x, s.state.p2.y, 3);
-    s.circle(s.state.p3.x, s.state.p3.y, 3);
-    s.state.current = s.state.p1;
   };
 
   s.draw = function() {
-    if (s.props.isPlaying) {
-      let current = s.state.current;
-      s.point(current.x, current.y);
-      let r = s.random(3);
-      let newPoint = {
-        x: current.x,
-        y: current.y
-      };
-      if (r < 1) {
-        newPoint.x = (newPoint.x + s.state.p1.x) / 2;
-        newPoint.y = (newPoint.y + s.state.p1.y) / 2;
-      }
-      if (r >= 1 && r < 2) {
-        newPoint.x = (newPoint.x + s.state.p2.x) / 2;
-        newPoint.y = (newPoint.y + s.state.p2.y) / 2;
-      }
-      if (r >= 2 && r < 3) {
-        newPoint.x = (newPoint.x + s.state.p3.x) / 2;
-        newPoint.y = (newPoint.y + s.state.p3.y) / 2;
-      }
-      s.state.current = { ...newPoint };
-    }
-    s.checkForReset();
+    s.background(0);
+    s.drawBoxes();
+    s.drawLines();
+    s.moveAround();
   };
 }

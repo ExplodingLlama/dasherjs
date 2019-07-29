@@ -1,12 +1,12 @@
 import React from "react";
 import "./App.css";
 
-import P5Wrapper from "./components/P5Wrapper";
+import Core from "./components/Core";
 
 function App() {
   return (
     <div className="App">
-      <P5Wrapper p5Props={{}} onSetAppState={() => {}} />
+      <Core />
     </div>
   );
 }
