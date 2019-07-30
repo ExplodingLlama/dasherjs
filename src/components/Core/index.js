@@ -42,8 +42,10 @@ export default class Core extends Component {
     //predictions: []
   };
 
-  setXY = (x, y) => {
+  setXY = (x, y, data) => {
+    if (x > 1) x = 1;
     this.setState({ x: x, y: y });
+    //
   };
 
   //Returns all the visual data in terms of x, y and all the boxes required to be made.

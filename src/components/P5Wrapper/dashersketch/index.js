@@ -44,9 +44,15 @@ export default function(s) {
         ((square.end - square.start) * s.state.width) / (4 * data.x);
       let squareY = (square.start * s.state.width) / (4 * data.x) + offsetY;
       let squareX = (s.state.width * 3) / 4 - squareSize; //because all the squares start on the line
+      s.fill(255);
       s.rect(squareX, squareY, squareSize, squareSize);
       s.textSize(32);
-      s.text(square.character, squareX + 10, squareY + squareSize / 2 - 10);
+      s.fill(0);
+      s.text(
+        square.character,
+        squareX + squareSize / 10,
+        squareY + squareSize / 2
+      );
     }
   };
 
@@ -70,7 +76,7 @@ export default function(s) {
         (s.state.width * 100);
       let newY = s.state.data.y + speedY * s.state.data.x;
       let newX = s.state.data.x + speedX * s.state.data.x;
-      s.setXY(newX, newY);
+      s.setXY(newX, newY, s.state.data);
       s.stroke(255, 0, 0);
       s.line(s.state.width / 2, s.state.height / 2, s.mouseX, s.mouseY);
       // s.textSize(32);
